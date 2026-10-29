@@ -51,7 +51,7 @@ export default function ProductPage({ side }: { side: Side }) {
       <section className="pv" onPointerDown={() => setTouched(true)}>
         <div className="pv__bg" />
         <div className="pv__ring" aria-hidden />
-        <BottleStage side={side} flavorId={f.id} control={ctrl} interactive autoRotate={spin ? 0.3 : 0} fill={window.innerWidth < 760 ? 0.56 : 0.72} className="pv__stage" viewRef={view} />
+        <BottleStage side={side} flavorId={f.id} control={ctrl} interactive autoRotate={spin ? 0.3 : 0} fill={window.innerWidth < 760 ? 0.56 : 0.6} className="pv__stage" viewRef={view} />
 
         <div className="pv__top pv__in">
           <p className="eyebrow">Breeze · {p.name}</p>

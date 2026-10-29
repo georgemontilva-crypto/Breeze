@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type MouseEvent } from 'react'
+import { Fragment, useLayoutEffect, useRef, type MouseEvent } from 'react'
 import { photoUrl, products, type Side } from '../data'
 import { useReveals, useTilt } from '../lib/hooks'
 import { gsap } from '../lib/smooth'
@@ -32,7 +32,7 @@ export default function About({ side }: { side: Side }) {
       <section className="about__hero">
         <p className="eyebrow">About us</p>
         <h1 className="display">
-          {title.map((w, i) => <span key={i} className="w"><span className={`wi ${i === 3 ? 'accent-word' : ''}`}>{w}</span>{' '}</span>)}
+          {title.map((w, i) => <Fragment key={i}><span className="w"><span className={`wi ${i === 3 ? 'accent-word' : ''}`}>{w}</span></span>{' '}</Fragment>)}
         </h1>
         <p className="lead about__lead" data-reveal>
           Breeze is a tablet brand built around contrast — a light side and a dark side, each with its own personality, its own flavors and its own look. Same obsession with detail on both.
