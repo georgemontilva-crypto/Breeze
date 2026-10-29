@@ -55,7 +55,11 @@ export function useReveals(scope: RefObject<HTMLElement>, deps: unknown[] = []) 
       })
     }, root)
     requestAnimationFrame(() => ScrollTrigger.refresh())
-    return () => ctx.revert()
+    let t = 0
+    const onImg = () => { clearTimeout(t); t = window.setTimeout(() => ScrollTrigger.refresh(), 120) }
+    const imgs = Array.from(root.querySelectorAll('img')).filter((i) => !i.complete)
+    imgs.forEach((i) => i.addEventListener('load', onImg, { once: true }))
+    return () => { clearTimeout(t); imgs.forEach((i) => i.removeEventListener('load', onImg)); ctx.revert() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 }

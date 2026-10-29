@@ -57,14 +57,14 @@ function Hero({ side }: { side: Side }) {
         .to(el.querySelector('.hero__scroll'), { opacity: 0, duration: 0.05 }, 0)
         .to(el.querySelector('.hero__word'), { xPercent: m ? -35 : -22, duration: 1 }, 0)
         .to(c, { spin: Math.PI * 2, duration: 0.8 }, 0.05)
-        .to(c, m ? { y: 0.14, scale: 0.72, duration: 0.2 } : { x: 0.2, scale: 0.95, duration: 0.2 }, 0.05)
+        .to(c, m ? { y: 0.12, scale: 0.86, duration: 0.2 } : { x: 0.2, scale: 0.95, duration: 0.2 }, 0.05)
       const specs = el.querySelectorAll('.hero__spec')
       specs.forEach((s, i) => {
         const at = 0.2 + i * 0.17
         tl.fromTo(s, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.07 }, at)
         if (i < specs.length - 1) tl.to(s, { opacity: m ? 0 : 0.28, y: m ? -40 : 0, duration: 0.07 }, at + 0.15)
       })
-      tl.to(c, m ? { y: 0.1, scale: 0.8, duration: 0.15 } : { x: 0.18, scale: 1.02, tilt: 0.06, duration: 0.15 }, 0.8)
+      tl.to(c, m ? { y: 0.14, scale: 0.84, duration: 0.15 } : { x: 0.18, scale: 1.02, tilt: 0.06, duration: 0.15 }, 0.8)
       tl.fromTo(el.querySelector('.hero__end'), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.08 }, 0.82)
     }, el)
     return () => ctx.revert()

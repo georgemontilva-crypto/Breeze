@@ -23,8 +23,8 @@ export default function Portal() {
   // bottles sit at the center of each half
   useEffect(() => {
     if (vertical) {
-      Object.assign(ctrlW.current, { x: 0, y: 0.2, scale: 0.78 })
-      Object.assign(ctrlB.current, { x: 0, y: -0.24, scale: 0.78 })
+      Object.assign(ctrlW.current, { x: 0.2, y: 0.25, scale: 0.6 })
+      Object.assign(ctrlB.current, { x: -0.2, y: -0.25, scale: 0.6 })
     } else {
       Object.assign(ctrlW.current, { x: -0.25, y: -0.03, scale: 0.92 })
       Object.assign(ctrlB.current, { x: 0.25, y: -0.03, scale: 0.92 })
@@ -50,8 +50,8 @@ export default function Portal() {
       cur += (target + idle - cur) * 0.07
       el.style.setProperty('--split', `${cur}%`)
       const k = (cur - 50) / 22
-      ctrlW.current.scale = (vertical ? 0.78 : 0.92) + Math.max(0, k) * 0.1
-      ctrlB.current.scale = (vertical ? 0.78 : 0.92) + Math.max(0, -k) * 0.1
+      ctrlW.current.scale = (vertical ? 0.6 : 0.92) + Math.max(0, k) * 0.1
+      ctrlB.current.scale = (vertical ? 0.6 : 0.92) + Math.max(0, -k) * 0.1
     }
     raf = requestAnimationFrame(loop)
     return () => { cancelAnimationFrame(raf); el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerleave', onLeave) }

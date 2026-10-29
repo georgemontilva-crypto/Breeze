@@ -168,7 +168,7 @@ export function createBottle(side: Side): BottleHandle {
   // dark ring under the cap (thread gap)
   const ring = new THREE.Mesh(
     new THREE.CylinderGeometry(s.capR - 0.05, s.capR - 0.05, 0.02, 96, 1, true),
-    new THREE.MeshBasicMaterial({ color: 0x050505, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: side === 'black' ? 0x050505 : 0xc9c9d0, side: THREE.DoubleSide }),
   )
   ring.position.y = s.capBottom + 0.005
   inner.add(ring)
