@@ -9,7 +9,7 @@ const links = [
   { to: '', label: 'Home' },
   { to: '/about', label: 'About Us' },
   { to: '/product', label: 'Product' },
-  { to: '#lab', label: 'Lab Report' },
+  { to: '/lab-reports', label: 'Lab Reports' },
   { to: '/contact', label: 'Contact' },
 ]
 
@@ -47,7 +47,7 @@ export function SwitchSide({ side, compact = false }: { side: Side; compact?: bo
 
 function Header({ side }: { side: Side }) {
   const p = products[side]
-  const { go, openLab } = useUI()
+  const { go } = useUI()
   const [open, setOpen] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -79,7 +79,6 @@ function Header({ side }: { side: Side }) {
   const click = (to: string) => (e: MouseEvent) => {
     e.preventDefault()
     setOpen(false)
-    if (to === '#lab') { openLab(); return }
     go(p.base + to, side, { x: e.clientX, y: e.clientY })
   }
 
@@ -91,9 +90,7 @@ function Header({ side }: { side: Side }) {
           <span className="hdr__tag">{p.short}</span>
         </a>
         <nav className="hdr__nav" aria-label="Main">
-          {links.map((l) => l.to === '#lab' ? (
-            <a key={l.to} href="#lab" onClick={click(l.to)} className="hdr__link">{l.label}</a>
-          ) : (
+          {links.map((l) => (
             <NavLink key={l.to} to={p.base + l.to} end onClick={click(l.to)} className={({ isActive }) => `hdr__link ${isActive ? 'is-active' : ''}`}>{l.label}</NavLink>
           ))}
         </nav>
@@ -107,7 +104,7 @@ function Header({ side }: { side: Side }) {
       <div ref={menuRef} className={`mmenu ${open ? 'is-open' : ''}`} aria-hidden={!open}>
         <nav>
           {links.map((l, i) => (
-            <a key={l.to} href={l.to === '#lab' ? '#lab' : p.base + l.to} onClick={click(l.to)} className="mmenu__link">
+            <a key={l.to} href={p.base + l.to} onClick={click(l.to)} className="mmenu__link">
               <small>0{i + 1}</small>{l.label}
             </a>
           ))}
@@ -123,7 +120,7 @@ function Header({ side }: { side: Side }) {
 
 function Footer({ side }: { side: Side }) {
   const p = products[side]
-  const { go, openLab } = useUI()
+  const { go } = useUI()
   const other: Side = side === 'white' ? 'black' : 'white'
   const nav = (to: string) => (e: MouseEvent) => { e.preventDefault(); go(to, side, { x: e.clientX, y: e.clientY }) }
   return (
@@ -143,7 +140,7 @@ function Footer({ side }: { side: Side }) {
           <a href={p.base} onClick={nav(p.base)}>Home</a>
           <a href={p.base + '/about'} onClick={nav(p.base + '/about')}>About Us</a>
           <a href={p.base + '/product'} onClick={nav(p.base + '/product')}>Product</a>
-          <a href="#lab" onClick={(e) => { e.preventDefault(); openLab() }}>Lab Report</a>
+          <a href={p.base + '/lab-reports'} onClick={nav(p.base + '/lab-reports')}>Lab Reports</a>
           <a href={p.base + '/contact'} onClick={nav(p.base + '/contact')}>Contact</a>
         </div>
         <div className="ftr__col">

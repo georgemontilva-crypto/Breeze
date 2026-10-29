@@ -77,3 +77,34 @@ export const photoUrl = (side: Side, flavorId: string) => `/img/${side}-${flavor
 
 export const sideFromPath = (path: string): Side | null =>
   path.startsWith('/7oh') ? 'black' : path.startsWith('/botanical') ? 'white' : null
+
+/* ---------- Lab reports (PharmLabs San Diego COAs) ---------- */
+export interface Coa {
+  sampleId: string
+  result: string // headline result
+  detail: string
+}
+export const coaLab = { name: 'PharmLabs San Diego', accreditation: 'ISO/IEC 17025:2017 · Acc. 85368', received: 'Oct 09, 2026', reported: 'Oct 16, 2026' }
+
+const ND = { result: 'ND', detail: 'Kratom alkaloid panel (7-OH, MGM-15, mitragynine, speciogynine, speciociliatine): not detected' }
+export const coas: Record<Side, Record<string, Coa>> = {
+  white: {
+    bluerazz: { sampleId: 'SD261009-001', ...ND },
+    strawberry: { sampleId: 'SD261009-002', ...ND },
+    watermelon: { sampleId: 'SD261009-003', ...ND },
+    cherry: { sampleId: 'SD261009-004', ...ND },
+    raspberry: { sampleId: 'SD261009-006', ...ND },
+  },
+  black: {
+    bluerazz: { sampleId: 'SD261009-007', result: '200.22 mg', detail: '7-OH per tablet · 40.04%' },
+    cherry: { sampleId: 'SD261009-008', result: '200.19 mg', detail: '7-OH per tablet · 40.03%' },
+    cottoncandy: { sampleId: 'SD261009-009', result: '200.68 mg', detail: '7-OH per tablet · 40.13%' },
+    grape: { sampleId: 'SD261009-010', result: '200.54 mg', detail: '7-OH per tablet · 40.10%' },
+    mango: { sampleId: 'SD261009-011', result: '200.74 mg', detail: '7-OH per tablet · 40.14%' },
+    original: { sampleId: 'SD261009-012', result: '200.09 mg', detail: '7-OH per tablet · 40.01%' },
+    strawberry: { sampleId: 'SD261009-013', result: '200.36 mg', detail: '7-OH per tablet · 40.07%' },
+    watermelon: { sampleId: 'SD261009-014', result: '200.87 mg', detail: '7-OH per tablet · 40.17%' },
+  },
+}
+export const coaUrl = (side: Side, id: string, kind: 'pdf' | 'img' | 'thumb') =>
+  `/coa/${side}-${id}${kind === 'pdf' ? '.pdf' : kind === 'img' ? '.webp' : '-thumb.webp'}`

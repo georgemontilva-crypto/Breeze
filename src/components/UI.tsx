@@ -2,11 +2,12 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { useNavigate } from 'react-router-dom'
 import { gsap, lockScroll, ScrollTrigger, scrollTop } from '../lib/smooth'
 import Logo from './Logo'
-import type { Side } from '../data'
+import { coaLab, coas, coaUrl, products, sideFromPath, type Side } from '../data'
 
 interface UICtx {
   go: (to: string, side: Side, from?: { x: number; y: number }) => void
-  openLab: () => void
+  /** without a flavor: go to the Lab Reports page; with a flavor: open that report */
+  openLab: (flavorId?: string, side?: Side) => void
 }
 
 const Ctx = createContext<UICtx>({ go: () => {}, openLab: () => {} })
@@ -16,7 +17,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const overlay = useRef<HTMLDivElement>(null)
   const [overSide, setOverSide] = useState<Side>('black')
-  const [lab, setLab] = useState(false)
+  const [lab, setLab] = useState<{ side: Side; id: string } | null>(null)
   const busy = useRef(false)
 
   const go = useCallback((to: string, side: Side, from?: { x: number; y: number }) => {
@@ -52,7 +53,11 @@ export function UIProvider({ children }: { children: ReactNode }) {
     })
   }, [navigate])
 
-  const openLab = useCallback(() => setLab(true), [])
+  const openLab = useCallback((flavorId?: string, sideArg?: Side) => {
+    const side = sideArg ?? sideFromPath(window.location.pathname) ?? 'black'
+    if (flavorId) setLab({ side, id: flavorId })
+    else go(products[side].base + '/lab-reports', side)
+  }, [go])
 
   return (
     <Ctx.Provider value={{ go, openLab }}>
@@ -60,46 +65,65 @@ export function UIProvider({ children }: { children: ReactNode }) {
       <div ref={overlay} className={`xfade xfade--${overSide}`} aria-hidden>
         <Logo variant={overSide === 'black' ? 'silver' : 'navy'} className="xfade__logo" />
       </div>
-      {lab && <LabModal onClose={() => setLab(false)} />}
+      {lab && <LabViewer side={lab.side} flavorId={lab.id} onClose={() => setLab(null)} onPick={(id) => setLab({ side: lab.side, id })} />}
     </Ctx.Provider>
   )
 }
 
-function LabModal({ onClose }: { onClose: () => void }) {
+function LabViewer({ side, flavorId, onClose, onPick }: { side: Side; flavorId: string; onClose: () => void; onPick: (id: string) => void }) {
   const ref = useRef<HTMLDivElement>(null)
+  const p = products[side]
+  const f = p.flavors.find((x) => x.id === flavorId) ?? p.flavors[0]
+  const c = coas[side][f.id]
+  const idx = p.flavors.indexOf(f)
+  const [zoom, setZoom] = useState(false)
+  const step = (d: number) => onPick(p.flavors[(idx + d + p.flavors.length) % p.flavors.length].id)
   useEffect(() => {
     lockScroll(true)
     const el = ref.current!
-    gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.35 })
-    gsap.fromTo(el.querySelector('.lab__card'), { y: 40, scale: 0.96, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.6, ease: 'expo.out', delay: 0.05 })
-    gsap.fromTo(el.querySelectorAll('.lab__title span'), { yPercent: 110 }, { yPercent: 0, stagger: 0.04, duration: 0.8, ease: 'expo.out', delay: 0.15 })
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
-    window.addEventListener('keydown', onKey)
-    ;(el.querySelector('.lab__close') as HTMLButtonElement)?.focus()
-    return () => { window.removeEventListener('keydown', onKey); lockScroll(false) }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.3 })
+    gsap.fromTo(el.querySelector('.coa__card'), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out' })
+    ;(el.querySelector('.coa__close') as HTMLButtonElement)?.focus()
+    return () => lockScroll(false)
   }, [])
-  const close = () => {
-    gsap.to(ref.current, { opacity: 0, duration: 0.25, onComplete: onClose })
-  }
-  const word = 'COMING SOON'
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
+      if (e.key === 'ArrowRight') step(1)
+      if (e.key === 'ArrowLeft') step(-1)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
+  const close = () => { gsap.to(ref.current, { opacity: 0, duration: 0.2, onComplete: onClose }) }
   return (
-    <div ref={ref} className="lab" role="dialog" aria-modal="true" aria-labelledby="lab-title" onClick={(e) => { if (e.target === e.currentTarget) close() }}>
-      <div className="lab__card">
-        <button className="lab__close" onClick={close} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-        </button>
-        <div className="lab__doc" aria-hidden>
-          <div className="lab__scan" />
-          {Array.from({ length: 9 }).map((_, i) => <i key={i} style={{ width: `${55 + ((i * 37) % 40)}%` }} />)}
-          <div className="lab__stamp">IN TESTING</div>
+    <div ref={ref} className={`coa coa--${side}`} data-side={side} role="dialog" aria-modal="true" aria-labelledby="coa-title" onClick={(e) => { if (e.target === e.currentTarget) close() }} style={{ ['--fc' as string]: f.color }}>
+      <div className="coa__card">
+        <header className="coa__head">
+          <div>
+            <p className="eyebrow">Certificate of Analysis · {coaLab.name}</p>
+            <h2 id="coa-title" className="coa__title">{p.short} <span className="script">{f.name}</span></h2>
+            <p className="coa__meta">Sample {c?.sampleId} · Reported {coaLab.reported} · {coaLab.accreditation}</p>
+          </div>
+          <button className="coa__close" onClick={close} aria-label="Close">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          </button>
+        </header>
+        <div className={`coa__doc ${zoom ? 'is-zoom' : ''}`} key={f.id} onClick={() => setZoom(!zoom)}>
+          <span className="coa__zoom">{zoom ? 'Tap to fit' : 'Tap to zoom'}</span>
+          <img src={coaUrl(side, f.id, 'img')} alt={`Lab report — Breeze ${p.short} ${f.name}`} />
         </div>
-        <p className="eyebrow">Lab Report · Certificate of Analysis</p>
-        <h2 id="lab-title" className="lab__title">
-          {word.split('').map((c, i) => <span key={i}>{c === ' ' ? ' ' : c}</span>)}
-        </h2>
-        <p className="lab__text">Third-party lab reports for every flavor and batch are on their way. Check back soon — every number will be published here.</p>
-        <button className="btn btn--solid" onClick={close}>Got it</button>
+        <footer className="coa__foot">
+          <div className="coa__nav">
+            <button onClick={() => step(-1)} aria-label="Previous flavor">←</button>
+            <span>{idx + 1} / {p.flavors.length}</span>
+            <button onClick={() => step(1)} aria-label="Next flavor">→</button>
+          </div>
+          <div className="coa__btns">
+            <a className="btn btn--ghost" href={coaUrl(side, f.id, 'pdf')} target="_blank" rel="noopener">Open PDF</a>
+            <a className="btn btn--solid" href={coaUrl(side, f.id, 'pdf')} download={`Breeze-${p.short}-${f.name.replace(/\s+/g, '')}-COA.pdf`}>Download</a>
+          </div>
+        </footer>
       </div>
     </div>
   )

@@ -7,17 +7,13 @@ import SideHome from './pages/SideHome'
 import About from './pages/About'
 import ProductPage from './pages/ProductPage'
 import Contact from './pages/Contact'
+import LabReports from './pages/LabReports'
 import { initSmooth, ScrollTrigger, scrollTop } from './lib/smooth'
 import { products, sideFromPath, type Side } from './data'
 
 function LabRoute({ side }: { side: Side }) {
-  const { openLab } = useUI()
   const nav = useNavigate()
-  useEffect(() => {
-    nav(products[side].base, { replace: true })
-    const t = setTimeout(openLab, 250)
-    return () => clearTimeout(t)
-  }, [side, nav, openLab])
+  useEffect(() => { nav(products[side].base + '/lab-reports', { replace: true }) }, [side, nav])
   return null
 }
 
@@ -37,7 +33,7 @@ function Titles() {
   useEffect(() => {
     const side = sideFromPath(loc.pathname)
     const seg = loc.pathname.split('/')[2]
-    const names: Record<string, string> = { about: 'About Us', product: 'Product', contact: 'Contact' }
+    const names: Record<string, string> = { about: 'About Us', product: 'Product', contact: 'Contact', 'lab-reports': 'Lab Reports' }
     document.title = side
       ? `${seg ? names[seg] ?? 'Breeze' : products[side].name} — Breeze ${products[side].short}`
       : 'Breeze — Two sides. One Breeze.'
@@ -64,6 +60,7 @@ export default function App() {
             <Route path="about" element={<About key={s} side={s} />} />
             <Route path="product" element={<ProductPage key={s} side={s} />} />
             <Route path="contact" element={<Contact key={s} side={s} />} />
+            <Route path="lab-reports" element={<LabReports key={s} side={s} />} />
             <Route path="lab-report" element={<LabRoute side={s} />} />
           </Route>
         ))}

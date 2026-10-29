@@ -96,7 +96,7 @@ function Hero({ side }: { side: Side }) {
           <span className="price-badge"><span>{p.price.replace(/\.\d+$/, '')}</span><sup>{p.price.split('.')[1]}</sup></span>
           <div className="hero__btns">
             <button className="btn btn--solid" onClick={nav(p.base + '/product')}>View in 3D</button>
-            <button className="btn btn--ghost" onClick={openLab}>Lab report</button>
+            <button className="btn btn--ghost" onClick={() => openLab()}>Lab reports</button>
           </div>
         </div>
         <div className="hero__scroll"><span>Scroll</span><i /></div>
@@ -293,8 +293,8 @@ function LabTeaser({ side }: { side: Side }) {
         <div className="labt__copy">
           <p className="eyebrow">Transparency</p>
           <h2 className="h2">Tested. Batch by batch.</h2>
-          <p className="lead">Every flavor will have its own third-party certificate of analysis — published right here, scannable from the QR on every label.</p>
-          <button className="btn btn--solid" onClick={openLab}>See lab reports</button>
+          <p className="lead">Every flavor has its own third-party certificate of analysis from PharmLabs San Diego (ISO/IEC 17025). Read them all here or scan the QR on your label.</p>
+          <button className="btn btn--solid" onClick={() => openLab()}>See lab reports</button>
         </div>
         <Logo variant={side === 'black' ? 'silver' : 'navy'} className="labt__logo" />
       </div>

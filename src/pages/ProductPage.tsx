@@ -115,7 +115,7 @@ export default function ProductPage({ side }: { side: Side }) {
             ))}
           </div>
           <div className="pd__btns" data-reveal>
-            <button className="btn btn--solid" onClick={openLab}>Lab report</button>
+            <button className="btn btn--solid" onClick={() => openLab(f.id, side)}>Lab report · {f.name}</button>
             <button className="btn btn--ghost" onClick={nav(p.base + '/contact')}>Wholesale inquiry</button>
           </div>
           <details className="pd__warn" data-reveal>
