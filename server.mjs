@@ -62,7 +62,10 @@ app.post('/api/contact', async (req, res) => {
 
 app.use('/assets', express.static(path.join(dist, 'assets'), { immutable: true, maxAge: '1y' }))
 app.use(express.static(dist, { maxAge: '7d', index: false }))
-app.get('*', (_req, res) => res.sendFile(path.join(dist, 'index.html')))
+app.get('*', (_req, res) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+  res.sendFile(path.join(dist, 'index.html'))
+})
 
 const port = process.env.PORT || 3000
 app.listen(port, () => console.log(`Breeze running on :${port}`))
