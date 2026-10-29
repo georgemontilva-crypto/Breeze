@@ -62,9 +62,9 @@ function Hero({ side }: { side: Side }) {
       specs.forEach((s, i) => {
         const at = 0.2 + i * 0.17
         tl.fromTo(s, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.07 }, at)
-        if (i < specs.length - 1) tl.to(s, { opacity: m ? 0 : 0.28, y: m ? -40 : 0, duration: 0.07 }, at + 0.15)
+        if (i < specs.length - 1 || m) tl.to(s, { opacity: m ? 0 : 0.28, y: m ? -40 : 0, duration: 0.07 }, at + 0.15)
       })
-      tl.to(c, m ? { y: 0.14, scale: 0.84, duration: 0.15 } : { x: 0.18, scale: 1.02, tilt: 0.06, duration: 0.15 }, 0.8)
+      tl.to(c, m ? { y: 0.08, scale: 1, duration: 0.15 } : { x: 0.18, scale: 1.02, tilt: 0.06, duration: 0.15 }, 0.8)
       tl.fromTo(el.querySelector('.hero__end'), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.08 }, 0.82)
     }, el)
     return () => ctx.revert()
@@ -78,7 +78,7 @@ function Hero({ side }: { side: Side }) {
       <div className="hero__sticky">
         <div className="hero__glow" />
         <div className="hero__word" aria-hidden>{side === 'white' ? 'BOTANICAL' : '7-HYDROXY'}</div>
-        <BottleStage side={side} flavorId={p.flavors[0].id} control={ctrl} interactive fill={0.66} autoRotate={0.18} className="hero__stage" />
+        <BottleStage side={side} flavorId={p.flavors[0].id} control={ctrl} interactive fill={0.66} autoRotate={0} className="hero__stage" />
         <div className="hero__head">
           <p className="hero__kicker eyebrow">{side === 'white' ? 'Breeze · Botanical Tablets' : 'Breeze · 7-Hydroxymitragynine'}</p>
           <h1 className="hero__title">
